@@ -1,19 +1,27 @@
 [
   {
-    "date": "Ven. 12 sept · 19h",
-    "titre": "Soirée jeux ouverte",
+    "titre": "on est a Martelle",
+    "texte": "Hello ,\n\nOn sera a martelle pour leur journ?e associatives ",
+    "date": "",
+    "photos": [
+      "images/20260829-140142-0.jpg"
+    ]
+  },
+  {
+    "date": "Ven. 12 sept ? 19h",
+    "titre": "Soir?e jeux ouverte",
     "texte": "Salle des associations, tous niveaux, jeux fournis sur place.",
     "photos": []
   },
   {
-    "date": "Sam. 27 sept · 14h",
-    "titre": "Après-midi familles",
-    "texte": "Jeux courts et simples, pour découvrir l'asso tranquillement.",
+    "date": "Sam. 27 sept ? 14h",
+    "titre": "Apr?s-midi familles",
+    "texte": "Jeux courts et simples, pour d?couvrir l'asso tranquillement.",
     "photos": []
   },
   {
-    "date": "Ven. 10 oct · 19h",
-    "titre": "Soirée jeux ouverte",
+    "date": "Ven. 10 oct ? 19h",
+    "titre": "Soir?e jeux ouverte",
     "texte": "Salle des associations. Amenez un jeu si vous en avez un.",
     "photos": []
   }
