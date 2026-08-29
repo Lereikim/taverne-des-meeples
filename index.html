@@ -211,25 +211,12 @@
     <div class="section-head">
       <span class="tag">au tableau cette semaine</span>
       <h2>Prochaines soirées</h2>
+      <p>C'est annoncé sur Facebook en premier, mais voilà les dates aussi ici, pour que ça se voie mieux.</p>
     </div>
 
-    <div class="quest-board">
-      <!-- MODIFIER ICI : une carte par date à venir -->
-      <div class="quest-card"><span class="tape-bit"></span>
-        <div class="date">Ven. 12 sept · 19h</div>
-        <h3>Soirée jeux ouverte</h3>
-        <p>Salle des associations, tous niveaux, jeux fournis sur place.</p>
-      </div>
-      <div class="quest-card"><span class="tape-bit"></span>
-        <div class="date">Sam. 27 sept · 14h</div>
-        <h3>Après-midi familles</h3>
-        <p>Jeux courts et simples, pour découvrir l'asso tranquillement.</p>
-      </div>
-      <div class="quest-card"><span class="tape-bit"></span>
-        <div class="date">Ven. 10 oct · 19h</div>
-        <h3>Soirée jeux ouverte</h3>
-        <p>Salle des associations. Amenez un jeu si vous en avez un.</p>
-      </div>
+    <div class="quest-board" id="quest-board">
+      <!-- Rempli automatiquement depuis annonces.json -->
+      <p style="text-align:center;color:var(--ink-soft);">Chargement des annonces…</p>
     </div>
 
     <div class="fb-feed-wrap">
@@ -239,6 +226,7 @@
         title="Fil Facebook de La Taverne des Meeples">
       </iframe>
     </div>
+    <p class="fb-feed-note">Ce cadre reprend automatiquement vos publications Facebook.</p>
   </div>
 </section>
 
@@ -247,22 +235,12 @@
     <div class="section-head">
       <span class="tag">un peu d'ambiance</span>
       <h2>Les moments ludiques</h2>
+      <p>Des photos de nos soirées — à remplacer par les vôtres.</p>
     </div>
 
     <div class="carousel">
       <div class="carousel-track" id="track">
-        <div class="slide"><figure class="polaroid">
-          <div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8" cy="8" r="1.3" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.3" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.3" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.3" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/></svg></div>
-          <figcaption>soirée du mois</figcaption>
-        </figure></div>
-        <div class="slide"><figure class="polaroid">
-          <div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 17 L21 17 M6 17 V9 a2 2 0 0 1 2-2 h8 a2 2 0 0 1 2 2 v8"/></svg></div>
-          <figcaption>autour de la table</figcaption>
-        </figure></div>
-        <div class="slide"><figure class="polaroid">
-          <div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 20 L4 10 L12 4 L20 10 L20 20 Z"/></svg></div>
-          <figcaption>salle des assos</figcaption>
-        </figure></div>
+        <!-- Rempli automatiquement depuis les photos de annonces.json -->
       </div>
       <button class="carousel-btn prev" aria-label="Photo précédente">‹</button>
       <button class="carousel-btn next" aria-label="Photo suivante">›</button>
@@ -315,31 +293,78 @@
 
 <footer>
   <img src="logo.png" alt="">La Taverne des Meeples — Marcelcave (80)
-  <span class="made">fait par l'association avec l'aide de Claude, entre deux parties 🎲</span>
+  <span class="made">fait maison par l'association, entre deux parties 🎲</span>
 </footer>
 
 <script>
-  const track = document.getElementById('track');
-  const slides = Array.from(track.children);
-  const dotsWrap = document.getElementById('dots');
-  let index = 0;
-  slides.forEach((_, i) => {
-    const d = document.createElement('button');
-    d.className = 'dot' + (i === 0 ? ' active' : '');
-    d.setAttribute('aria-label', 'Aller à la photo ' + (i+1));
-    d.addEventListener('click', () => goTo(i));
-    dotsWrap.appendChild(d);
-  });
-  const dots = Array.from(dotsWrap.children);
-  function goTo(i){
-    index = (i + slides.length) % slides.length;
-    track.style.transform = `translateX(-${index * 100}%)`;
-    dots.forEach((d, di) => d.classList.toggle('active', di === index));
+  const FALLBACK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8" cy="8" r="1.3" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.3" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.3" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.3" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/></svg>';
+
+  function renderQuestBoard(annonces){
+    const board = document.getElementById('quest-board');
+    if(!annonces.length){
+      board.innerHTML = '<p style="text-align:center;color:var(--ink-soft);">Aucune annonce pour le moment — revenez bientôt !</p>';
+      return;
+    }
+    board.innerHTML = annonces.slice(0, 6).map(a => `
+      <div class="quest-card"><span class="tape-bit"></span>
+        <div class="date">${a.date || ''}</div>
+        <h3>${a.titre || ''}</h3>
+        <p>${a.texte || ''}</p>
+      </div>
+    `).join('');
   }
-  document.querySelector('.carousel-btn.prev').addEventListener('click', () => goTo(index - 1));
-  document.querySelector('.carousel-btn.next').addEventListener('click', () => goTo(index + 1));
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(!reduceMotion){ setInterval(() => goTo(index + 1), 6500); }
+
+  function renderCarousel(annonces){
+    const track = document.getElementById('track');
+    const photos = annonces.flatMap(a => (a.photos || []).map(src => ({src, caption: a.titre || ''})));
+    if(!photos.length){
+      track.innerHTML = `<div class="slide"><figure class="polaroid"><div class="ph">${FALLBACK_ICON}</div><figcaption>en attente de photos</figcaption></figure></div>`;
+    } else {
+      track.innerHTML = photos.map(p => `
+        <div class="slide"><figure class="polaroid">
+          <div class="ph"><img src="${p.src}" alt="${p.caption}" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>${p.caption}</figcaption>
+        </figure></div>
+      `).join('');
+    }
+    setupCarousel();
+  }
+
+  function setupCarousel(){
+    const track = document.getElementById('track');
+    const slides = Array.from(track.children);
+    const dotsWrap = document.getElementById('dots');
+    dotsWrap.innerHTML = '';
+    let index = 0;
+    slides.forEach((_, i) => {
+      const d = document.createElement('button');
+      d.className = 'dot' + (i === 0 ? ' active' : '');
+      d.setAttribute('aria-label', 'Aller à la photo ' + (i+1));
+      d.addEventListener('click', () => goTo(i));
+      dotsWrap.appendChild(d);
+    });
+    const dots = Array.from(dotsWrap.children);
+    function goTo(i){
+      index = (i + slides.length) % slides.length;
+      track.style.transform = `translateX(-${index * 100}%)`;
+      dots.forEach((d, di) => d.classList.toggle('active', di === index));
+    }
+    document.querySelector('.carousel-btn.prev').onclick = () => goTo(index - 1);
+    document.querySelector('.carousel-btn.next').onclick = () => goTo(index + 1);
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(!reduceMotion && slides.length > 1){ setInterval(() => goTo(index + 1), 6500); }
+  }
+
+  fetch('annonces.json?_=' + Date.now())
+    .then(r => r.ok ? r.json() : [])
+    .then(annonces => {
+      renderQuestBoard(annonces);
+      renderCarousel(annonces);
+    })
+    .catch(() => {
+      renderQuestBoard([]);
+      renderCarousel([]);
+    });
 </script>
 
 </body>
