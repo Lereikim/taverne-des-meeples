@@ -314,16 +314,15 @@
     `).join('');
   }
 
-  function renderCarousel(annonces){
+  function renderCarousel(photos){
     const track = document.getElementById('track');
-    const photos = annonces.flatMap(a => (a.photos || []).map(src => ({src, caption: a.titre || ''})));
     if(!photos.length){
       track.innerHTML = `<div class="slide"><figure class="polaroid"><div class="ph">${FALLBACK_ICON}</div><figcaption>en attente de photos</figcaption></figure></div>`;
     } else {
       track.innerHTML = photos.map(p => `
         <div class="slide"><figure class="polaroid">
-          <div class="ph"><img src="${p.src}" alt="${p.caption}" style="width:100%;height:100%;object-fit:cover;"></div>
-          <figcaption>${p.caption}</figcaption>
+          <div class="ph"><img src="${p.src}" alt="${p.legende || ''}" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>${p.legende || ''}</figcaption>
         </figure></div>
       `).join('');
     }
@@ -357,14 +356,13 @@
 
   fetch('annonces.json?_=' + Date.now())
     .then(r => r.ok ? r.json() : [])
-    .then(annonces => {
-      renderQuestBoard(annonces);
-      renderCarousel(annonces);
-    })
-    .catch(() => {
-      renderQuestBoard([]);
-      renderCarousel([]);
-    });
+    .then(renderQuestBoard)
+    .catch(() => renderQuestBoard([]));
+
+  fetch('photos.json?_=' + Date.now())
+    .then(r => r.ok ? r.json() : [])
+    .then(renderCarousel)
+    .catch(() => renderCarousel([]));
 </script>
 
 </body>
