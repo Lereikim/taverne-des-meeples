@@ -124,6 +124,38 @@
   .fb-feed-wrap{display:flex;justify-content:center;}
   .fb-feed-note{text-align:center;color:var(--ink-soft);font-size:.85rem;max-width:460px;margin:14px auto 0;}
 
+  /* ---------- Calendrier des samedis ludiques ---------- */
+  .calendar-wrap{
+    max-width:420px;margin:0 auto;background:var(--card);
+    border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px 22px 24px;box-shadow:3px 4px 0 rgba(0,0,0,.08);
+  }
+  .calendar-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .calendar-head button{
+    background:transparent;border:2px solid var(--ink);border-radius:50%;
+    width:32px;height:32px;cursor:pointer;font-size:1.1rem;line-height:1;color:var(--ink);
+  }
+  .calendar-head button:hover{background:var(--ink);color:#fff;}
+  .calendar-head .mois{font-family:var(--font-stamp);font-size:1.15rem;text-transform:capitalize;}
+  .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;}
+  .calendar-grid .jour-nom{font-size:.75rem;font-weight:800;color:var(--ink-soft);padding-bottom:4px;}
+  .calendar-grid .jour{
+    aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    border-radius:8px;font-size:.9rem;color:var(--ink-soft);
+  }
+  .calendar-grid .jour.vide{visibility:hidden;}
+  .calendar-grid .jour.rencontre{
+    background:var(--red);color:#fff;font-weight:800;
+    box-shadow:2px 3px 0 rgba(0,0,0,.15);
+  }
+  .calendar-grid .jour.rencontre .heure{
+    font-family:var(--font-hand);font-size:.72rem;font-weight:700;line-height:1;margin-top:1px;
+  }
+  .calendar-legende{
+    text-align:center;font-family:var(--font-hand);color:var(--red-dark);
+    font-size:1.1rem;margin-top:14px;
+  }
+
   /* ---------- Carousel (polaroid style) ---------- */
   .carousel{position:relative;max-width:620px;margin:0 auto;}
   .carousel-track{display:flex;transition:transform .5s cubic-bezier(.65,0,.35,1);}
@@ -186,7 +218,7 @@
       <img src="logo.png" alt="Logo La Taverne des Meeples">
     </a>
     <nav class="links">
-      <a href="#quest">Prochaines soirées</a>
+      <a href="#quest">Prochaines aprems ludiques</a>
       <a href="#moments">Les moments ludiques</a>
       <a href="#reseaux">Nos réseaux</a>
       <a href="#find">Nous trouver</a>
@@ -198,7 +230,7 @@
   <div class="wrap">
     <img class="logo-big" src="logo.png" alt="">
     <h1>La <span class="red">Taverne</span> des Meeples</h1>
-    <div class="sticky-note">On se retrouve pour jouer, tout simplement — voici où nous suivre et quand nous rejoindre.</div>
+    <div class="sticky-note">On se retrouve pour jouer 1 samedi sur 2, tout simplement — voici où nous suivre et quand nous rejoindre.</div>
     <div class="cta-row">
       <a class="btn btn-primary" href="#quest">Les prochaines dates</a>
       <a class="btn btn-ghost" href="#reseaux">Nos réseaux</a>
@@ -210,13 +242,22 @@
   <div class="wrap">
     <div class="section-head">
       <span class="tag">au tableau cette semaine</span>
-      <h2>Prochaines soirées</h2>
-      <p>C'est annoncé sur Facebook en premier, mais voilà les dates aussi ici, pour que ça se voie mieux.</p>
+      <h2>Prochaines aprems ludiques</h2>
     </div>
 
     <div class="quest-board" id="quest-board">
       <!-- Rempli automatiquement depuis annonces.json -->
       <p style="text-align:center;color:var(--ink-soft);">Chargement des annonces…</p>
+    </div>
+
+    <div class="calendar-wrap">
+      <div class="calendar-head">
+        <button id="cal-prev" aria-label="Mois précédent">‹</button>
+        <span class="mois" id="cal-mois"></span>
+        <button id="cal-next" aria-label="Mois suivant">›</button>
+      </div>
+      <div class="calendar-grid" id="cal-grid"></div>
+      <div class="calendar-legende" id="cal-legende"></div>
     </div>
 
     <div class="fb-feed-wrap">
@@ -226,7 +267,6 @@
         title="Fil Facebook de La Taverne des Meeples">
       </iframe>
     </div>
-    <p class="fb-feed-note">Ce cadre reprend automatiquement vos publications Facebook.</p>
   </div>
 </section>
 
@@ -235,7 +275,6 @@
     <div class="section-head">
       <span class="tag">un peu d'ambiance</span>
       <h2>Les moments ludiques</h2>
-      <p>Des photos de nos soirées — à remplacer par les vôtres.</p>
     </div>
 
     <div class="carousel">
@@ -246,7 +285,6 @@
       <button class="carousel-btn next" aria-label="Photo suivante">›</button>
     </div>
     <div class="dots" id="dots"></div>
-    <p class="carousel-note">Mettez vos photos dans un dossier <code>images/</code> et remplacez chaque bloc <code>.ph</code> par une balise <code>&lt;img&gt;</code>.</p>
   </div>
 </section>
 
@@ -293,7 +331,7 @@
 
 <footer>
   <img src="logo.png" alt="">La Taverne des Meeples — Marcelcave (80)
-  <span class="made">fait maison par l'association, entre deux parties 🎲</span>
+  <span class="made">fait maison par l'association avec l'aide de Claude, entre deux parties 🎲</span>
 </footer>
 
 <script>
@@ -363,6 +401,63 @@
     .then(r => r.ok ? r.json() : [])
     .then(renderCarousel)
     .catch(() => renderCarousel([]));
+
+  // ---------- Calendrier des rencontres ----------
+  (function(){
+    const NOMS_JOURS = ['L','M','M','J','V','S','D'];
+    const NOMS_MOIS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+    let dates = {}; // { 'YYYY-MM-DD': { heure, libelle } }
+    let moisAffiche = new Date(); // mois actuellement affiché dans le calendrier
+    moisAffiche.setDate(1);
+
+    function cleDate(date){
+      return date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
+    }
+
+    function dessinerCalendrier(){
+      const grid = document.getElementById('cal-grid');
+      const moisLabel = document.getElementById('cal-mois');
+      const legende = document.getElementById('cal-legende');
+      const annee = moisAffiche.getFullYear();
+      const mois = moisAffiche.getMonth();
+
+      moisLabel.textContent = NOMS_MOIS[mois] + ' ' + annee;
+
+      const premierJourSemaine = (new Date(annee, mois, 1).getDay() + 6) % 7; // lundi = 0
+      const joursDansMois = new Date(annee, mois + 1, 0).getDate();
+
+      let html = NOMS_JOURS.map(j => `<div class="jour-nom">${j}</div>`).join('');
+      for(let i = 0; i < premierJourSemaine; i++){
+        html += '<div class="jour vide"></div>';
+      }
+      let libellesDuMois = [];
+      for(let j = 1; j <= joursDansMois; j++){
+        const date = new Date(annee, mois, j);
+        const info = dates[cleDate(date)];
+        html += `<div class="jour${info ? ' rencontre' : ''}">${j}${info && info.heure ? '<span class="heure">' + info.heure + '</span>' : ''}</div>`;
+        if(info && info.libelle) libellesDuMois.push(info.libelle);
+      }
+      grid.innerHTML = html;
+      legende.textContent = libellesDuMois.length ? libellesDuMois.join(' · ') : '🎲 = rencontre prévue';
+    }
+
+    document.getElementById('cal-prev').addEventListener('click', () => {
+      moisAffiche.setMonth(moisAffiche.getMonth() - 1);
+      dessinerCalendrier();
+    });
+    document.getElementById('cal-next').addEventListener('click', () => {
+      moisAffiche.setMonth(moisAffiche.getMonth() + 1);
+      dessinerCalendrier();
+    });
+
+    fetch('planning.json?_=' + Date.now())
+      .then(r => r.ok ? r.json() : [])
+      .then(liste => {
+        (liste || []).forEach(d => { dates[d.date] = { heure: d.heure, libelle: d.libelle }; });
+        dessinerCalendrier();
+      })
+      .catch(() => dessinerCalendrier());
+  })();
 </script>
 
 </body>
