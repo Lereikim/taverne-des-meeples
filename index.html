@@ -208,6 +208,21 @@
   }
   footer img{height:26px;display:inline-block;vertical-align:-6px;margin-right:8px;border-radius:50%;}
   footer .made{font-family:var(--font-hand);font-size:1.05rem;color:var(--paper);opacity:.85;display:block;margin-top:6px;}
+
+  /* ---------- Agencement Calendrier & Facebook ---------- */
+  .quest-extras {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-top: 30px;
+  }
+  .quest-extras > div {
+    flex: 1;
+    min-width: 320px;
+    max-width: 460px;
+  }
 </style>
 </head>
 <body>
@@ -249,23 +264,24 @@
       <!-- Rempli automatiquement depuis annonces.json -->
       <p style="text-align:center;color:var(--ink-soft);">Chargement des annonces…</p>
     </div>
-
-    <div class="calendar-wrap">
-      <div class="calendar-head">
-        <button id="cal-prev" aria-label="Mois précédent">‹</button>
-        <span class="mois" id="cal-mois"></span>
-        <button id="cal-next" aria-label="Mois suivant">›</button>
+    <div class="quest-extras">
+      <div class="calendar-wrap">
+        <div class="calendar-head">
+          <button id="cal-prev" aria-label="Mois précédent">‹</button>
+          <span class="mois" id="cal-mois"></span>
+          <button id="cal-next" aria-label="Mois suivant">›</button>
+        </div>
+        <div class="calendar-grid" id="cal-grid"></div>
+        <div class="calendar-legende" id="cal-legende"></div>
       </div>
-      <div class="calendar-grid" id="cal-grid"></div>
-      <div class="calendar-legende" id="cal-legende"></div>
-    </div>
 
-    <div class="fb-feed-wrap">
-      <iframe
-        src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FLaTaverneDesMeeples&tabs=timeline&width=460&height=420&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false"
-        width="460" height="420" style="border:none;overflow:hidden;max-width:100%;" scrolling="no" frameborder="0" allowfullscreen="true"
-        title="Fil Facebook de La Taverne des Meeples">
-      </iframe>
+      <div class="fb-feed-wrap">
+        <iframe
+          src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FLaTaverneDesMeeples&tabs=timeline&width=460&height=420&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false"
+          width="460" height="420" style="border:none;overflow:hidden;max-width:100%;" scrolling="no" frameborder="0" allowfullscreen="true"
+          title="Fil Facebook de La Taverne des Meeples">
+        </iframe>
+      </div>
     </div>
   </div>
 </section>
